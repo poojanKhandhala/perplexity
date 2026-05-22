@@ -42,7 +42,7 @@ export const registerValidation = [
         .withMessage('Password must contain at least one uppercase letter')
         .matches(/[a-z]/)
         .withMessage('Password must contain at least one lowercase letter')
-        .matches(/[!@#$%^&*(),.?":{}|<>]/)
+        .matches(/[!@#$%^&*(),.?"_:{}|<>]/)
         .withMessage('Password must contain at least one special character'),
         validate
 ]
