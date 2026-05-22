@@ -9,4 +9,5 @@ export const config = {
     GOOGLE_CLIENT_SECRET : process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_USER : process.env.GOOGLE_USER,
     GOOGLE_REFRESH_TOKEN : process.env.GOOGLE_REFRESH_TOKEN,
+    JWT_SECRET_KEY : process.env.JWT_SECRET_KEY
 }
