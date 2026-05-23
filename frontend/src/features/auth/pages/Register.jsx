@@ -22,7 +22,6 @@ const Register = () => {
         e.preventDefault()
         setTouched({ name: true, email: true, password: true })
         if (Object.keys(errors).length === 0) {
-            // No backend: simulate successful registration and navigate
             navigate('/')
         }
     }

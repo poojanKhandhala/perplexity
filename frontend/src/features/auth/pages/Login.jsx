@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 
 const Login = () => {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [touched, setTouched] = useState({})
+    const [touched, setTouched] = useState({});
+    const { handleLogin } = useAuth()
 
     const validate = () => {
         const errors = {}
@@ -16,14 +18,29 @@ const Login = () => {
 
     const errors = validate()
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        setTouched({ email: true, password: true })
-        if (Object.keys(errors).length === 0) {
-            // No backend: just navigate to a placeholder or home
-            navigate('/')
-        }
+   const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    setTouched({ email: true, password: true })
+
+    
+    if (Object.keys(errors).length > 0) return
+
+    try {
+
+        await handleLogin({
+            email,
+            password
+        })
+
+        navigate('/')
+
+    } catch (error) {
+
+        console.log(error)
+
     }
+}
 
     return (
         <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center px-4">
