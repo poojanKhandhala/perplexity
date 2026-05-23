@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+
 
 const Register = () => {
+    const {handleRegister} = useAuth()
     const navigate = useNavigate()
-    const [name, setName] = useState('')
+    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [touched, setTouched] = useState({})
 
     const validate = () => {
         const errors = {}
-        if (!name) errors.name = 'Name is required'
+        if (!username) errors.name = 'Name is required'
         if (!email) errors.email = 'Email is required'
         if (!password) errors.password = 'Password is required'
         return errors
@@ -18,11 +21,23 @@ const Register = () => {
 
     const errors = validate()
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault()
         setTouched({ name: true, email: true, password: true })
         if (Object.keys(errors).length === 0) {
             navigate('/')
+        }
+
+        try{
+            await handleRegister({
+                email ,
+                password,
+                username
+            })
+
+            navigate('/')
+        }catch(err){
+            console.log(err)
         }
     }
 
@@ -36,8 +51,8 @@ const Register = () => {
                         <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-200">Name</label>
                         <input
                             type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             onBlur={() => setTouched((t) => ({ ...t, name: true }))}
                             className={`mt-1 block w-full rounded-lg border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 p-3 ${touched.name && errors.name ? 'ring-1 ring-red-400' : ''
                                 }`}

@@ -12,7 +12,7 @@ const authRouter = express.Router();
  * @access Public
  * @returns {object} Success message
  */
-authRouter.post('/register',registerValidation , registerController)
+authRouter.post('/register' , registerController)
 
 
 /**
