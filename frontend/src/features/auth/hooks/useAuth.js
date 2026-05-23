@@ -20,7 +20,7 @@ export function useAuth(){
      async function handleLogin(){
         try{
             dispatch(setLoading(true))
-            const data = await register({email , passowrd})
+            const data = await login({email , passowrd})
         }catch(error){
             dispatch(setError(error.response?.data?.message || 'Login failed'))
         }finally{

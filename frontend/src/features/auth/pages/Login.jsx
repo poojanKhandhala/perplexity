@@ -1,179 +1,86 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import AuthLayout from '../components/AuthLayout';
-import SocialButton from '../components/SocialButton';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Checkbox from '../../../components/ui/Checkbox';
-import { useToast } from '../../../context/ToastContext';
-import { validateEmail, validatePassword } from '../utils/validation';
+import React, { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 
-export default function Login() {
-  const { toast } = useToast();
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [touched, setTouched] = useState({});
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-    remember: false,
-  });
-  const [errors, setErrors] = useState({});
+const Login = () => {
+    const navigate = useNavigate()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [touched, setTouched] = useState({})
 
-  const validate = () => {
-    const next = {
-      email: validateEmail(form.email),
-      password: validatePassword(form.password),
-    };
-    setErrors(next);
-    return !Object.values(next).some(Boolean);
-  };
-
-  const handleBlur = (field) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    if (field === 'email') {
-      setErrors((prev) => ({ ...prev, email: validateEmail(form.email) }));
+    const validate = () => {
+        const errors = {}
+        if (!email) errors.email = 'Email is required'
+        if (!password) errors.password = 'Password is required'
+        return errors
     }
-    if (field === 'password') {
-      setErrors((prev) => ({ ...prev, password: validatePassword(form.password) }));
+
+    const errors = validate()
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        setTouched({ email: true, password: true })
+        if (Object.keys(errors).length === 0) {
+            // No backend: just navigate to a placeholder or home
+            navigate('/')
+        }
     }
-  };
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    if (touched[field]) {
-      if (field === 'email') {
-        setErrors((prev) => ({ ...prev, email: validateEmail(value) }));
-      }
-      if (field === 'password') {
-        setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
-      }
-    }
-  };
+    return (
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 flex items-center justify-center px-4">
+            <div className="w-full max-w-md bg-white dark:bg-neutral-800 rounded-2xl shadow-sm ring-1 ring-black/5 dark:ring-white/5 p-8">
+                <h1 className="text-2xl font-semibold text-neutral-900 dark:text-neutral-100 text-center">Welcome back</h1>
+                <p className="mt-2 text-sm text-neutral-600 dark:text-neutral-300 text-center">Log in to continue</p>
 
-  const simulateSubmit = async (callback) => {
-    await new Promise((r) => setTimeout(r, 1200));
-    callback();
-  };
+                <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <div>
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-200">Email</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+                            className={`mt-1 block w-full rounded-lg border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 p-3 ${touched.email && errors.email ? 'ring-1 ring-red-400' : ''
+                                }`}
+                            placeholder="you@example.com"
+                        />
+                        {touched.email && errors.email && (
+                            <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                        )}
+                    </div>
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched({ email: true, password: true });
-    if (!validate()) return;
+                    <div>
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-200">Password</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onBlur={() => setTouched((t) => ({ ...t, password: true }))}
+                            className={`mt-1 block w-full rounded-lg border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-300 p-3 ${touched.password && errors.password ? 'ring-1 ring-red-400' : ''
+                                }`}
+                            placeholder="Your password"
+                        />
+                        {touched.password && errors.password && (
+                            <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                        )}
+                    </div>
 
-    setLoading(true);
-    try {
-      await simulateSubmit(() => {
-        toast('Welcome back! You have signed in successfully.', 'success');
-      });
-    } catch {
-      toast('Something went wrong. Please try again.', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
+                    <button
+                        type="submit"
+                        className="w-full mt-2 py-3 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
+                    >
+                        Log in
+                    </button>
+                </form>
 
-  const handleGoogle = async () => {
-    setGoogleLoading(true);
-    try {
-      await simulateSubmit(() => {
-        toast('Google sign-in is not configured yet.', 'info');
-      });
-    } finally {
-      setGoogleLoading(false);
-    }
-  };
-
-  return (
-    <AuthLayout
-      brandingTitle="Welcome back"
-      brandingSubtitle="Sign in to continue exploring insights, managing your workspace, and collaborating with your team."
-      footerText="Don't have an account?"
-      footerLinkText="Create one"
-      footerLinkTo="/register"
-    >
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Sign in
-        </h2>
-        <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
-          Enter your credentials to access your account
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-        <Input
-          id="login-email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@company.com"
-          value={form.email}
-          onChange={(e) => handleChange('email', e.target.value)}
-          onBlur={() => handleBlur('email')}
-          error={touched.email ? errors.email : ''}
-          leftIcon={Mail}
-        />
-
-        <Input
-          id="login-password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          autoComplete="current-password"
-          placeholder="••••••••"
-          value={form.password}
-          onChange={(e) => handleChange('password', e.target.value)}
-          onBlur={() => handleBlur('password')}
-          error={touched.password ? errors.password : ''}
-          leftIcon={Lock}
-          rightElement={
-            <button
-              type="button"
-              onClick={() => setShowPassword((s) => !s)}
-              className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          }
-        />
-
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <Checkbox
-            id="remember-me"
-            label="Remember me"
-            checked={form.remember}
-            onChange={(e) => setForm((prev) => ({ ...prev, remember: e.target.checked }))}
-          />
-          <Link
-            to="/forgot-password"
-            className="text-sm font-medium text-slate-600 underline-offset-4 transition hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-white"
-          >
-            Forgot password?
-          </Link>
+                <div className="mt-6 text-center text-sm text-neutral-600 dark:text-neutral-300">
+                    Don't have an account?{' '}
+                    <Link to="/register" className="text-neutral-900 dark:text-neutral-100 font-medium underline-offset-2 hover:underline">
+                        Register
+                    </Link>
+                </div>
+            </div>
         </div>
-
-        <Button type="submit" size="lg" loading={loading}>
-          Sign in
-        </Button>
-
-        <div className="relative py-1">
-          <div className="absolute inset-0 flex items-center" aria-hidden="true">
-            <div className="w-full border-t border-slate-200 dark:border-slate-700" />
-          </div>
-          <p className="relative mx-auto w-fit bg-transparent px-3 text-xs font-medium uppercase tracking-wider text-slate-400 dark:bg-slate-900/0 dark:text-slate-500">
-            or
-          </p>
-        </div>
-
-        <SocialButton onClick={handleGoogle} loading={googleLoading} />
-      </form>
-    </AuthLayout>
-  );
+    )
 }
+
+export default Login
